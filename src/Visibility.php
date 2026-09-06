@@ -7,6 +7,7 @@
 namespace GlpiPlugin\Glpisearch;
 
 use CommonDBTM;
+use CommonITILObject;
 use Session;
 
 /**
@@ -78,6 +79,57 @@ final class Visibility
         }
 
         return implode(' OR ', $clauses);
+    }
+
+    /**
+     * May this session be handed facet counts for records {@see keep()} has
+     * not vetted?
+     *
+     * Facet distributions come back from Meilisearch counted *before* the
+     * rights check, and a distribution is not only numbers: the value is the
+     * key, so it is a requester's login, a location, a group name, a
+     * supervisor. Whether that discloses anything depends entirely on whether
+     * the entity pre-filter and GLPI's answer agree for this session:
+     *
+     *  - They agree when the session sees everything its entities hold. Then
+     *    the counts describe exactly the records it could have listed anyway.
+     *  - They disagree when its rights are narrower than its entities — a
+     *    technician on READMY rather than READALL, an assignable asset it
+     *    neither owns nor is assigned. Then the counts name people and places
+     *    attached to records it may not open, and the row list's silence about
+     *    them is undone by the sidebar.
+     *
+     * Unscoped types are always false. Their filter is `entities_id = -1`,
+     * which matches the whole index — there is no entity half to fall back on,
+     * so their facets would be counted across every tenant in the instance.
+     */
+    public static function mayCountAll(string $itemtype): bool
+    {
+        if (!Schema::isEntityScoped($itemtype)) {
+            return false;
+        }
+
+        $item = getItemForItemtype($itemtype);
+        if (!$item instanceof CommonDBTM) {
+            return false;
+        }
+
+        $right = (string) ($item::$rightname ?? '');
+        if ($right === '') {
+            return false;
+        }
+
+        // READALL is the ITIL right that means "every ticket in the entity",
+        // as opposed to READMY/READGROUP which are the narrower ones the row
+        // list would enforce per record.
+        if (is_subclass_of($itemtype, CommonITILObject::class)) {
+            return (bool) Session::haveRight($right, CommonITILObject::READALL);
+        }
+
+        // Elsewhere plain READ is the "all of it" right: the narrower ones are
+        // READ_ASSIGNED / READ_OWNED, which AssignableItem falls back to only
+        // when READ is absent.
+        return (bool) Session::haveRight($right, READ);
     }
 
     /**

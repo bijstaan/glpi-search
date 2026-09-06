@@ -123,13 +123,22 @@ final class Finder
                 continue;
             }
 
-            $wanted = Schema::facetsFor($itemtype);
+            $declared = Schema::facetsFor($itemtype);
 
             // The visibility filter and the user's facet choices are AND'd, and
             // the visibility half is written first and never optional. A facet
             // filter narrows what somebody may already see; it can never widen
-            // it.
-            $chosen = self::facetFilter($facetFilters, $wanted);
+            // it — so what may be filtered *on* is everything the index
+            // declares, and every row it returns still goes through keep().
+            $chosen = self::facetFilter($facetFilters, $declared);
+
+            // What may be counted *back* is narrower, and for a different
+            // reason: counts are taken before the rights check and carry their
+            // own values — names, locations, groups. A session that cannot see
+            // every record its entities hold gets the coded labels only.
+            $countable = Visibility::mayCountAll($itemtype)
+                ? $declared
+                : array_values(array_intersect($declared, Schema::LABEL_FACETS));
 
             $query = [
                 'indexUid'             => Schema::indexFor($itemtype),
@@ -139,8 +148,8 @@ final class Finder
                 'attributesToRetrieve' => ['id', 'itemtype', 'items_id', 'title', 'subtitle', 'ref'],
             ];
 
-            if (Settings::flag('facets_enabled') && $wanted !== []) {
-                $query['facets'] = $wanted;
+            if (Settings::flag('facets_enabled') && $countable !== []) {
+                $query['facets'] = $countable;
             }
 
             // Private followups and private tasks are readable only with the
@@ -181,13 +190,16 @@ final class Finder
             }
 
             foreach (array_keys($facetFilters) as $attribute) {
-                if (!in_array($attribute, $wanted, true)) {
+                // Only for an attribute whose counts this session is allowed to
+                // be shown; a stand-in for one it is not would reintroduce the
+                // whole leak by the back door, unfiltered.
+                if (!in_array($attribute, $countable, true)) {
                     continue;
                 }
 
                 $without = self::facetFilter(
                     array_diff_key($facetFilters, [$attribute => true]),
-                    $wanted
+                    $declared
                 );
 
                 $counting = [
@@ -329,9 +341,11 @@ final class Finder
                     continue;
                 }
 
-                // Meilisearch takes a single-quoted string; the only thing that
-                // can break out of one is a single quote.
-                $quoted[] = "'" . str_replace("'", "\\'", $value) . "'";
+                // Meilisearch takes a single-quoted string, and two things break
+                // out of one: a quote, and the backslash that escapes it. Doing
+                // only the quote leaves `\'` escaping the escape and closing the
+                // string anyway. addcslashes() does both in one pass.
+                $quoted[] = "'" . addcslashes($value, "\\'") . "'";
             }
 
             if ($quoted !== []) {
@@ -350,9 +364,16 @@ final class Finder
      * be shown "New (40)" and then see twelve rows. That is a real wart and the
      * alternative is worse: counting after the check would mean fetching and
      * loading every matching record on every keystroke, which is the cost this
-     * whole plugin exists to avoid. The entity filter has already been applied
-     * in Meilisearch, so the gap is only ever the per-record rights — and the
-     * numbers are presented as approximate where they are shown.
+     * whole plugin exists to avoid — and the numbers are presented as
+     * approximate where they are shown.
+     *
+     * What that argument does *not* cover, and what the caller has already
+     * settled before anything reaches here, is which attributes may be counted
+     * at all. A distribution carries its values as keys, so an unrestricted one
+     * names the requesters and locations of records the session may not open —
+     * and for an unscoped type, whose filter is `entities_id = -1`, it names
+     * them across every tenant. {@see Visibility::mayCountAll()} decides;
+     * everything below assumes that decision was made.
      *
      * @param array<string,array<string,int>> $into
      */

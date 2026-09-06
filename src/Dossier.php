@@ -46,6 +46,17 @@ final class Dossier
 
         $user = new User();
 
+        // Both halves of GLPI's read contract, in that order. `canViewItem()`
+        // on a User is an entity check and nothing more — it never consults the
+        // `user` right — so on its own it hands the whole directory (login, real
+        // name, every address, phone, mobile, location, title) to any central
+        // profile that was deliberately not granted it. Checked before the read
+        // so that a refusal still looks like "no such user" either way, which is
+        // what keeps this from being an id oracle.
+        if (!$user->canView()) {
+            return null;
+        }
+
         if (!$user->getFromDB($users_id) || !$user->canViewItem()) {
             return null;
         }

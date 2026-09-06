@@ -93,6 +93,21 @@ final class Schema
     public const MAX_FACET_VALUES = 20;
 
     /**
+     * The facets whose values are coded labels rather than somebody's words.
+     *
+     * The distinction matters because a facet distribution *is* its values —
+     * "New (12)" carries the key as well as the count. These are the ones
+     * {@see Documents::labels()} writes from a fixed vocabulary: a status, a
+     * priority, a ticket type. Knowing that four records somewhere say "High"
+     * discloses nothing about them.
+     *
+     * Every other facet is derived from a foreign key or an actor, so its
+     * values are names — a requester's login, a location, a group, a
+     * supervisor. Those are the ones {@see Visibility::mayCountAll()} gates.
+     */
+    public const LABEL_FACETS = ['status', 'priority', 'urgency', 'impact', 'type', 'trashed'];
+
+    /**
      * Meilisearch's own ranking rules, in its own order.
      *
      * Written out rather than fetched so that adding a tiebreaker cannot
