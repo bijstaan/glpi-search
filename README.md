@@ -13,7 +13,7 @@ what. Meilisearch filters on entity because that is cheap and removes almost
 everything; GLPI is then asked about every survivor, by the same method the
 record's own page calls. A search engine that disagreed with GLPI about
 visibility would be a data leak that looks like a feature. See
-[docs/visibility.md](docs/visibility.md), which is the document to read before
+[docs/visibility.md](https://gitlab.rfni.dev/norsewind/glpi-erpnext-mods/-/wikis/glpi-search/visibility), which is the document to read before
 any other.
 
 Requires GLPI 11.0 and a Meilisearch server. Depends on nothing outside GLPI's
