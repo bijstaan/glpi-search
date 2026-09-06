@@ -1,0 +1,345 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* Copyright (C) 2026 Bijstaan */
+/**
+ * The header search dropdown.
+ *
+ * Deliberately plain: it hangs off GLPI's own header input, so it borrows
+ * Tabler's variables rather than introducing a second visual language two
+ * pixels away from the first. Every colour falls back to a literal, because a
+ * theme that has not defined a variable should still produce a readable panel
+ * rather than transparent text on a transparent ground.
+ */
+
+/* --tblr-bg-surface-tertiary, never --tblr-bg-surface-secondary.
+ *
+ * Core declares `--tblr-bg-surface-secondary: var(--tblr-light)` on :root, and
+ * its dark palette redefines `--tblr-light` to #e6e6e6 without redefining the
+ * surface token — so that one paints a near-white panel on a black page, with
+ * body-coloured (#e6e6e6) text on it. Measured at 1.00:1. The tertiary surface
+ * is derived from the body background and follows the theme.
+ */
+
+.glpisearch-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 1080;                   /* above the sticky header, below modals */
+    max-height: min(70vh, 32rem);
+    overflow-y: auto;
+    background: var(--tblr-bg-surface, #ffffff);
+    border: 1px solid var(--tblr-border-color, #dbe0e5);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+    padding: .25rem 0;
+
+    /* The header is dark in GLPI's horizontal layout, and the panel is not.
+       Without this the panel inherits the header's light-on-dark text and
+       renders white on white. */
+    color: var(--tblr-body-color, #1a2634);
+    text-align: left;
+}
+
+.glpisearch-group {
+    padding: .375rem .75rem .1875rem;
+    font-size: .6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--tblr-secondary, #7a8794);
+}
+
+.glpisearch-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .3125rem .75rem;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.glpisearch-row:hover,
+.glpisearch-row--active {
+    background: var(--tblr-active-bg, #f2f5f8);
+    color: inherit;
+    text-decoration: none;
+}
+
+.glpisearch-icon {
+    flex: 0 0 auto;
+    width: 1rem;
+    text-align: center;
+    color: var(--tblr-secondary, #7a8794);
+}
+
+.glpisearch-body {
+    flex: 1 1 auto;
+    min-width: 0;                    /* lets the ellipsis below actually apply */
+}
+
+.glpisearch-title,
+.glpisearch-subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.glpisearch-title {
+    font-size: .8125rem;
+}
+
+.glpisearch-subtitle {
+    font-size: .6875rem;
+    color: var(--tblr-secondary, #7a8794);
+}
+
+.glpisearch-badge {
+    flex: 0 0 auto;
+    font-size: .6875rem;
+    color: var(--tblr-secondary, #7a8794);
+    background: var(--tblr-bg-surface-tertiary, #f2f5f8);
+    border-radius: 4px;
+    padding: .0625rem .3125rem;
+}
+
+/* ---------------------------------------------------------------- results page
+ *
+ * Sits above GLPI's own global search results rather than replacing them, so it
+ * has to read as an addition to that page and not as a different application
+ * bolted onto the top of it. Tabler's card, Tabler's variables, no new
+ * vocabulary.
+ */
+
+.glpisearch-page {
+    background: var(--tblr-bg-surface, #ffffff);
+    border: 1px solid var(--tblr-border-color, #dbe0e5);
+    border-radius: 6px;
+    padding: .75rem 1rem 1rem;
+}
+
+.glpisearch-page-head {
+    font-size: .9375rem;
+    font-weight: 600;
+    margin-bottom: .625rem;
+}
+
+.glpisearch-page-body {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.glpisearch-facets {
+    flex: 0 0 14rem;
+    max-width: 100%;
+}
+
+.glpisearch-results {
+    flex: 1 1 22rem;
+    min-width: 0;
+}
+
+.glpisearch-results[aria-busy="true"] {
+    opacity: .5;
+}
+
+.glpisearch-facet {
+    margin-bottom: .875rem;
+}
+
+.glpisearch-facet-head {
+    font-size: .6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--tblr-secondary, #7a8794);
+    margin-bottom: .25rem;
+}
+
+.glpisearch-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    margin: 0 .25rem .25rem 0;
+    padding: .125rem .4375rem;
+    font-size: .75rem;
+    line-height: 1.4;
+    color: inherit;
+    background: var(--tblr-bg-surface-tertiary, #f2f5f8);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.glpisearch-chip:hover {
+    border-color: var(--tblr-border-color, #dbe0e5);
+}
+
+/* Selected state carries a border as well as a colour, so it survives a theme
+   whose primary tint is close to the resting background. */
+.glpisearch-chip--on {
+    color: var(--tblr-primary, #206bc4);
+    background: var(--tblr-primary-lt, #e9f0f9);
+    border-color: var(--tblr-primary, #206bc4);
+}
+
+.glpisearch-chip-count {
+    font-size: .6875rem;
+    color: var(--tblr-secondary, #7a8794);
+}
+
+.glpisearch-chip--on .glpisearch-chip-count {
+    color: inherit;
+}
+
+.glpisearch-section + .glpisearch-section {
+    margin-top: .75rem;
+}
+
+.glpisearch-section-head {
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--tblr-secondary, #7a8794);
+    margin: 0 0 .25rem;
+}
+
+/* The page reuses the dropdown's row, which is absolutely positioned nowhere
+   and so needs only its own padding back. */
+.glpisearch-page .glpisearch-row {
+    border-radius: 4px;
+}
+
+.glpisearch-none,
+.glpisearch-note {
+    font-size: .75rem;
+    color: var(--tblr-secondary, #7a8794);
+}
+
+.glpisearch-note {
+    margin-top: .75rem;
+    padding-top: .5rem;
+    border-top: 1px solid var(--tblr-border-color, #dbe0e5);
+}
+
+/* ------------------------------------------------------------------- dossier
+ *
+ * One person, above the results. Set apart from the result rows by a tinted
+ * ground rather than by another border, because it sits inside a card that
+ * already has one and two nested frames read as a mistake.
+ */
+
+.glpisearch-dossier {
+    background: var(--tblr-bg-surface-tertiary, #f2f5f8);
+    border-radius: 6px;
+    padding: .625rem .75rem;
+    margin-bottom: .875rem;
+}
+
+.glpisearch-dossier-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+.glpisearch-dossier-name {
+    font-size: .9375rem;
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+}
+
+.glpisearch-dossier-name:hover {
+    text-decoration: underline;
+}
+
+.glpisearch-dossier-bit {
+    font-size: .75rem;
+    color: var(--tblr-secondary, #7a8794);
+}
+
+/* A disabled account is the single most useful thing to notice about somebody
+   who cannot log in, so it does not get the same grey as their phone number. */
+.glpisearch-dossier-inactive {
+    color: var(--tblr-danger, #d63939);
+    font-weight: 600;
+}
+
+.glpisearch-dossier-body {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.glpisearch-dossier-col {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.glpisearch-dossier .glpisearch-row {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.glpisearch-dossier .glpisearch-row:hover {
+    background: transparent;
+    text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------- dark theme
+ *
+ * Core declares `.text-muted { color: var(--tblr-muted) !important; }`, so a
+ * scoped PROPERTY override is a silent no-op (this plugin shipped exactly
+ * that on 2026-08-21; auror_dark still measured 3.34:1). The fix is
+ * redefining the VARIABLE inside our scope — core's !important then resolves
+ * against our value. `.form-text` keys to `--tblr-secondary-color`, a Tabler
+ * literal no GLPI dark palette redefines; both variables move together.
+ * transparent 10% of --tblr-body-color measures ~4.9:1 on auror_dark's card
+ * surface (28% undershoots at 3.75:1). Never self-reference a token in its
+ * own redefinition — circular, silently invalid.
+ *
+ * The dropdown panel and results page mount at body/header level, so the
+ * scope class rides each mount node's own root class — no page wrapper
+ * exists to lean on.
+ */
+:root[data-glpi-theme-dark="1"] .glpisearch-config,
+:root[data-glpi-theme-dark="1"] .glpisearch-panel,
+:root[data-glpi-theme-dark="1"] .glpisearch-page {
+    --tblr-muted: color-mix(in srgb, var(--tblr-body-color), transparent 10%);
+    --tblr-secondary-color: color-mix(in srgb, var(--tblr-body-color), transparent 10%);
+}
+
+/* Fixed status colours re-checked per theme. The -lt badges keep full-
+ * saturation ink on their tint: red measured 2.76:1 and green 4.31:1 on
+ * auror_dark. Lift the ink, keep the tint; matching !important because the
+ * utilities carry one. */
+:root[data-glpi-theme-dark="1"] .glpisearch-config .badge.bg-red-lt {
+    color: color-mix(in srgb, var(--tblr-red, #d63939), white 45%) !important;
+}
+
+:root[data-glpi-theme-dark="1"] .glpisearch-config .badge.bg-green-lt {
+    color: color-mix(in srgb, var(--tblr-green, #2fb344), white 35%) !important;
+}
+
+:root[data-glpi-theme-dark="1"] .glpisearch-config .badge.bg-blue-lt {
+    color: color-mix(in srgb, var(--tblr-blue, #206bc4), white 45%) !important;
+}
+
+/* btn-outline-danger's resting ink is var(--tblr-red): 2.95:1 on the dark
+ * body. Resting state only — hover/active fill the button and core's own
+ * pairing takes over. */
+:root[data-glpi-theme-dark="1"] .glpisearch-config .btn-outline-danger {
+    color: color-mix(in srgb, var(--tblr-red, #d63939), white 40%);
+    border-color: color-mix(in srgb, var(--tblr-red, #d63939), white 20%);
+}
+
+/* Same core <code> accent-ink-on-dark trap (measured 2.12:1 elsewhere in this
+ * pass); the config page quotes index names and synonym rules in <code>. */
+:root[data-glpi-theme-dark="1"] .glpisearch-config code {
+    color: var(--tblr-body-color);
+}
