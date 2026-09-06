@@ -12,9 +12,7 @@ What it deliberately does **not** do is become the authority on who may see
 what. Meilisearch filters on entity because that is cheap and removes almost
 everything; GLPI is then asked about every survivor, by the same method the
 record's own page calls. A search engine that disagreed with GLPI about
-visibility would be a data leak that looks like a feature. See
-[docs/visibility.md](https://gitlab.rfni.dev/norsewind/glpi-erpnext-mods/-/wikis/glpi-search/visibility), which is the document to read before
-any other.
+visibility would be a data leak that looks like a feature.
 
 Requires GLPI 11.0 and a Meilisearch server. Depends on nothing outside GLPI's
 own vendor tree — the client is a few hundred lines of Guzzle, not an SDK.
@@ -378,7 +376,6 @@ src/Finder.php         the search API every surface calls
 front/config.php       the settings page
 ajax/search.php        the header box's backend
 public/js/search.js    the header takeover
-docs/visibility.md     who may see what, and why it is split in two
 
 glpi-search/tests/browser/glpisearch-check.js
                        the browser half: the header takeover, the results

@@ -17,7 +17,7 @@
  * Meilisearch filters on entity because that is cheap and removes almost
  * everything; GLPI is then asked about every survivor. A search engine that
  * disagreed with GLPI about visibility would be a data leak that looks like a
- * feature, so the index is never the last word. See docs/visibility.md.
+ * feature, so the index is never the last word.
  */
 
 use Glpi\Plugin\Hooks;
