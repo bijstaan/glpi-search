@@ -210,8 +210,8 @@ final class Dossier
      * What this person has been given.
      *
      * Every asset type GLPI gives an owner column, rather than a list of the
-     * ones somebody thought of — an MSP that tracks phones and monitors cares
-     * about those on a call as much as about laptops.
+     * ones somebody thought of — a service desk that tracks phones and
+     * monitors cares about those on a call as much as about laptops.
      *
      * @return array{rows:array<int,array<string,mixed>>,total:int}
      */

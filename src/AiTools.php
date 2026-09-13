@@ -15,7 +15,7 @@ use GlpiPlugin\Glpiai\Tool;
  * own exact-match SQL. It is precise, it respects every right the profile
  * system defines, and it cannot find `Printre` — or `Schmidt` when the record
  * says `Schmitt`, or a hostname somebody transposed two characters of. A model
- * paraphrasing a customer's words hits that wall constantly and has no way to
+ * paraphrasing an entity's words hits that wall constantly and has no way to
  * know it did: an exact-match search that finds nothing looks exactly like a
  * fact that is not recorded.
  *
@@ -61,7 +61,7 @@ final class AiTools
                 . 'assets, people, knowledge articles and more — matching on partial words and '
                 . 'misspellings that GLPI\'s own exact-match search cannot find. Use it as the '
                 . 'second attempt whenever an exact search came back empty, whenever you are '
-                . 'searching words a customer used rather than words somebody typed into GLPI, '
+                . 'searching words an entity used rather than words somebody typed into GLPI, '
                 . 'and whenever a name or hostname might be spelled slightly differently. Never '
                 . 'conclude that something does not exist from an exact search alone.',
             schema: [
@@ -165,7 +165,7 @@ final class AiTools
             'note'    => $total === 0
                 ? 'Nothing matched, and this search does tolerate misspellings — so the words '
                   . 'themselves are probably wrong rather than the spelling. Try what an '
-                  . 'engineer would have written rather than what the customer said.'
+                  . 'engineer would have written rather than what the entity said.'
                 : 'Titles and ids only. Follow up with read_ticket, read_asset or read_user for '
                   . 'anything worth looking at properly.',
         ];

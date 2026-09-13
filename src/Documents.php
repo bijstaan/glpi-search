@@ -411,7 +411,7 @@ final class Documents
      * The line under the title: enough to tell two similar records apart.
      *
      * Status and entity, which is the pair that disambiguates in practice —
-     * "Printer offline" for three different customers is the case this exists
+     * "Printer offline" for three different entities is the case this exists
      * for.
      */
     /**
@@ -433,8 +433,8 @@ final class Documents
         // User that column is the *default entity for records they create* —
         // not where they belong, and not what they can see, both of which come
         // out of `glpi_profiles_users`. A user whose profile is on the root
-        // entity and whose default is a customer's would be displayed as
-        // belonging to that customer, which is a claim nobody made.
+        // entity and whose default is an entity's would be displayed as
+        // belonging to that entity, which is a claim nobody made.
         //
         // The rule is the same one the filter uses: if the column is not good
         // enough to decide who may see the record, it is not good enough to
@@ -617,7 +617,7 @@ final class Documents
      *
      * A subtitle earns its place by disambiguating — three results called
      * "Printer offline" need something under them. For the entity-scoped types
-     * the customer is that something; for these it has to be found elsewhere.
+     * the entity is that something; for these it has to be found elsewhere.
      *
      * @param array<string,string> $relations
      * @return string[]

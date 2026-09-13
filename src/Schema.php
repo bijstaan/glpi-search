@@ -141,9 +141,9 @@ final class Schema
      * Core's list is what *its* global search covers, which is not the same
      * question as what is worth finding by name. Knowledge articles are the
      * clearest omission — somebody typing a symptom into the header box is
-     * hoping for exactly one of these — and the rest are records an MSP refers
-     * to constantly and currently cannot reach without knowing which menu they
-     * live under.
+     * hoping for exactly one of these — and the rest are records a service
+     * desk refers to constantly and currently cannot reach without knowing
+     * which menu they live under.
      */
     private const EXTRA_TYPES = [
         'KnowbaseItem', 'Entity', 'Location', 'ITILCategory', 'TaskCategory',

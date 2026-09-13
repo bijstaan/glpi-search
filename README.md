@@ -252,7 +252,7 @@ across every configured itemtype at once.
 
 glpi-ai's native searches go through GLPI's exact-match SQL, and an exact search
 that finds nothing looks exactly like a fact that is not recorded, so a model
-paraphrasing a customer's words concludes "there is no such ticket". The tool's
+paraphrasing an entity's words concludes "there is no such ticket". The tool's
 description tells it to reach for this as the second attempt, every time.
 
 Rights are this plugin's own: `Visibility::filterFor()` narrows the query before

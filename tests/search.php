@@ -401,7 +401,7 @@ echo "\nUnscoped types\n";
 // A user's entities_id is the default entity for records they *create*. It is
 // not where they belong and not what they can see, both of which come out of
 // glpi_profiles_users — so a user whose profile is on the root entity and whose
-// default is a customer's must not be labelled with that customer.
+// default is an entity's must not be labelled with that entity.
 $probe_user = new User();
 $probe_id   = (int) $probe_user->add([
     'name'        => 'glpisearch-subtitle',
@@ -679,7 +679,7 @@ $followup->add([
 $followup->add([
     'itemtype'   => Ticket::class,
     'items_id'   => $printer,
-    'content'    => 'Internal note: the customer was billed under zzprivatemarker.',
+    'content'    => 'Internal note: the entity was billed under zzprivatemarker.',
     'is_private' => 1,
 ]);
 
