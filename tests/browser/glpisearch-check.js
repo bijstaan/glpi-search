@@ -18,6 +18,9 @@
 //   cd glpi-search/tests/browser && SHOT_DIR=../../docs/screenshots \
 //     node glpisearch-check.js
 const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+const { openDark, audit } = require('./dark');
 const { execSync } = require('child_process');
 const { fullPage } = require('./shot');
 
@@ -35,6 +38,7 @@ const php = (code) =>
 
 const BASE = 'http://localhost:8081';
 const SHOTS = process.env.SHOT_DIR || '.';
+const DARK_SHOTS = path.join(SHOTS, 'dark');
 
 const fail = [];
 function check(name, cond, detail) {
@@ -310,6 +314,34 @@ async function typeInHeader(page, text) {
     afterSave.rows.length > 0, JSON.stringify(afterSave.groups));
 
   check('no uncaught JavaScript errors', errs.length === 0, errs.join(' | '));
+
+
+  // --- The dark palette --------------------------------------------------
+  //
+  // The header dropdown and the results page are this plugin's own markup
+  // drawn over core's chrome, so both are re-read on a black body.
+  fs.mkdirSync(DARK_SHOTS, { recursive: true });
+  console.log('\nswitching to the dark palette...');
+
+  const dark = await openDark(browser, { plugin: 'glpisearch' });
+
+  await dark.goto(`${BASE}/front/central.php`, { waitUntil: 'networkidle' });
+  await dark.waitForTimeout(500);
+  let bad = await audit(dark, 'glpisearch-');
+  check('[dark] the header: no near-white panel carrying dark-body text',
+    bad.whiteBg.length === 0, JSON.stringify(bad.whiteBg));
+  await fullPage(dark, `${DARK_SHOTS}/search-dark-01-header.png`);
+
+  await dark.goto(`${BASE}/plugins/glpisearch/front/config.php`, { waitUntil: 'networkidle' });
+  await dark.waitForTimeout(400);
+  bad = await audit(dark, 'glpisearch-');
+  check('[dark] settings: no near-white panel carrying dark-body text',
+    bad.whiteBg.length === 0, JSON.stringify(bad.whiteBg));
+  check('[dark] settings: muted text meets 4.5:1',
+    bad.lowContrast.length === 0, JSON.stringify(bad.lowContrast));
+  await fullPage(dark, `${DARK_SHOTS}/search-dark-02-settings.png`);
+
+  check('[dark] no page errors', dark.__darkErrors.length === 0, dark.__darkErrors.join(' | '));
 
   await browser.close();
 
