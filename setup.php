@@ -25,7 +25,7 @@ use GlpiPlugin\Glpisearch\Schema;
 use GlpiPlugin\Glpisearch\Settings;
 
 define('PLUGIN_GLPISEARCH_VERSION', '0.1.0');
-define('PLUGIN_GLPISEARCH_MIN_GLPI', '11.0');
+define('PLUGIN_GLPISEARCH_MIN_GLPI', '12.0');
 
 // Settings live under this config context; the Meilisearch key is encrypted.
 define('PLUGIN_GLPISEARCH_CONFIG_CONTEXT', 'plugin:glpisearch');
