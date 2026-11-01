@@ -203,6 +203,11 @@ echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
 // the rebuild and drop actions, which are not settings and do not belong in
 // the middle of a form somebody is part-way through filling in.
 
+// Fetched once, here, because the hybrid card further down needs it too and it
+// costs a round trip per index.
+$status       = Indexer::status();
+$status_ready = $status['ok'];
+
 echo "<div class='card mb-3'><div class='card-header'><h3 class='card-title'>"
    . __s('Index status', 'glpisearch') . '</h3></div><div class="card-body">';
 
@@ -414,11 +419,6 @@ echo "<div class='form-text'>"
 echo '</div></div>';
 
 // -------------------------------------------------------------------- hybrid
-// Fetched here rather than in the status card below, because both need it and
-// it costs a round trip per index.
-$status       = Indexer::status();
-$status_ready = $status['ok'];
-
 echo "<div class='card mb-3'><div class='card-header'><h3 class='card-title'>"
    . __s('Search by meaning', 'glpisearch') . '</h3></div><div class="card-body">';
 
